@@ -91,46 +91,7 @@
           </p>
         </div>
 
-        <div class="concert-list">
-          <article class="concert">
-            <time datetime="2026-10-01">
-              <span>01</span>
-              OCT
-            </time>
-            <div>
-              <p class="concert-type">Jeudi · 21h00</p>
-              <h3>Nom de l'artiste</h3>
-              <p>Genre musical · Bienne</p>
-            </div>
-            <a href="#" aria-label="Détails du concert">↗</a>
-          </article>
-
-          <article class="concert">
-            <time datetime="2026-10-08">
-              <span>08</span>
-              OCT
-            </time>
-            <div>
-              <p class="concert-type">Jeudi · 21h00</p>
-              <h3>Nom de l'artiste</h3>
-              <p>Genre musical · Suisse</p>
-            </div>
-            <a href="#" aria-label="Détails du concert">↗</a>
-          </article>
-
-          <article class="concert">
-            <time datetime="2026-10-15">
-              <span>15</span>
-              OCT
-            </time>
-            <div>
-              <p class="concert-type">Jeudi · 21h00</p>
-              <h3>Nom de l'artiste</h3>
-              <p>Genre musical · International</p>
-            </div>
-            <a href="#" aria-label="Détails du concert">↗</a>
-          </article>
-        </div>
+        <div class="concert-list" id="concert-list"></div>
 
         <a class="button button-outline" href="#">Tous les concerts <span>→</span></a>
       </div>
@@ -195,5 +156,79 @@
     </div>
   </footer>
 
+
+  <script>
+    async function loadConcerts() {
+      const container = document.getElementById('concert-list');
+
+      try {
+        const response = await fetch('https://www.yagwud.com/cms/wp-admin/admin-ajax.php?action=events_list&bid=commerce');
+
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // The feed contains the concerts in "shows"
+        const shows = data.shows || [];
+
+        container.innerHTML = '';
+
+        shows.forEach(show => {
+          const date = parseDate(show.show_date);
+
+          const article = document.createElement('article');
+          article.className = 'concert';
+
+          article.innerHTML = `
+            <time datetime="${date.iso}">
+              <span>${date.day}</span>
+              ${date.month}
+            </time>
+
+            <div>
+              <p class="concert-type">Jeudi · 21h00</p>
+              <h3>${show.title || ''}</h3>
+              <p>${show.club_name || ''}</p>
+            </div>
+
+            ${show.event_link ? `
+              <a href="${show.event_link}" aria-label="Détails du concert" target="_blank">↗</a>
+            ` : ''}
+          `;
+
+          container.appendChild(article);
+        });
+
+      } catch (error) {
+        console.error('Could not load concerts:', error);
+        container.innerHTML = '<p>Impossible de charger les concerts.</p>';
+      }
+    }
+
+
+    function parseDate(dateString) {
+      // Feed format: DD.MM.YYYY
+      const [day, month, year] = dateString.split('.');
+
+      const date = new Date(year, month - 1, day);
+
+      const months = [
+        'JAN', 'FEB', 'MAR', 'APR', 'MAI', 'JUN',
+        'JUL', 'AOU', 'SEP', 'OCT', 'NOV', 'DÉC'
+      ];
+
+      return {
+        iso: `${year}-${month}-${day}`,
+        day: day,
+        month: months[date.getMonth()]
+      };
+    }
+
+    loadConcerts();
+
+    
+  </script>
 </body>
 </html>
