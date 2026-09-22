@@ -45,4 +45,3 @@ Recommended structure:
 
 Keep the design system in CSS and let WordPress provide the content.
 
-rsync -rva ~/Development/www/cafe-du-commerce-starter/ vemamuwo@sofasurfer.org:/home/vemamuwo/www/ducommerce-biel.ch/
