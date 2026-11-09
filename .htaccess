@@ -1,0 +1,5 @@
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^www\.ducommerce-biel\.ch$ [NC]
+RewriteRule ^(.*)$ https://ducommerce-biel.ch/$1 [R=301,L]
+

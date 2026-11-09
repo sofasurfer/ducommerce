@@ -184,6 +184,10 @@
         shows.forEach(show => {
           const date = parseDate(show.show_date);
 
+          const weekday = new Date(show.show_date.split('.').reverse().join('-')).toLocaleDateString('fr-FR', {
+            weekday: 'long'
+          });
+
           const article = document.createElement('article');
           article.className = 'concert';
 
@@ -194,7 +198,7 @@
             </time>
 
             <div>
-              <p class="concert-type">${date.weekday} · 21h00</p>
+              <p class="concert-type">${weekday} · 21h00</p>
               <h3>${show.title || ''}</h3>
               <p>${show.club_name || ''}</p>
             </div>
